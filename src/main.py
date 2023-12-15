@@ -99,6 +99,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("target", help="file or directory to fix")
 parser.add_argument(
+    "-s",
     "--show",
     dest="operation",
     action="store_const",
