@@ -53,6 +53,20 @@ def get_new_datetime(fpath):
 
 
 def update_datetime(fpath):
+    #exif_dict = piexif.load(fpath)
+    #original_datetime = exif_dict["Exif"].get(DATETIMEORIGINAL)
+    existingData=getPhotoTags(fpath)
+    if "EXIF:DateTimeOriginal" in existingData:
+        print(f'File: {fpath}: Has existing date info, keeping at: {existingData["EXIF:DateTimeOriginal"]} {existingData["EXIF:OffsetTimeOriginal"]}')
+        
+    else:
+        new_datetime = get_new_datetime(fpath)
+        if new_datetime is None:
+            print(f'File: {fpath}: Has no existing date info, and has no matching .json file in this directory... skipping')
+        else:
+            formattedNewDate = new_datetime.strftime("%Y:%m:%d %H:%M:%S")
+            print(f'File: {fpath}: Has no existing date info, changing to: {formattedNewDate}')
+            setPhotoTags(fpath, formattedNewDate)
 
     #if original_datetime is not None:
     #    lprint("%s: Keeping at %s" % (fpath, original_datetime))
