@@ -53,18 +53,17 @@ def get_new_datetime(fpath):
 
 
 def update_datetime(fpath):
-    exif_dict = piexif.load(fpath)
-    original_datetime = exif_dict["Exif"].get(DATETIMEORIGINAL)
-    if original_datetime is not None:
-        lprint("%s: Keeping at %s" % (fpath, original_datetime))
-        return
-    new_datetime = get_new_datetime(fpath)
-    if not new_datetime:
-        lprint("%s: No timestamp found" % fpath)
-        return
-    lprint("%s: Updating %s" % (fpath, new_datetime))
-    exif_dict["Exif"][DATETIMEORIGINAL] = new_datetime.strftime("%Y:%m:%d %H:%M:%S")
-    piexif.insert(piexif.dump(exif_dict), fpath)
+
+    #if original_datetime is not None:
+    #    lprint("%s: Keeping at %s" % (fpath, original_datetime))
+    #    return
+    #new_datetime = get_new_datetime(fpath)
+    #if not new_datetime:
+    #    lprint("%s: No timestamp found" % fpath)
+    #    return
+    #lprint("%s: Updating %s" % (fpath, new_datetime))
+    #exif_dict["Exif"][DATETIMEORIGINAL] = new_datetime.strftime("%Y:%m:%d %H:%M:%S")
+    #piexif.insert(piexif.dump(exif_dict), fpath)
 
 
 def recursively_operate(target, operation):
