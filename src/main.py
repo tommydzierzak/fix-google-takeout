@@ -76,6 +76,17 @@ def recursively_operate(target, operation):
                 except Exception as e:
                     lprint("Could not operate %s: %s" % (name, str(e)))
 
+def getPhotoTags(file):
+    with ExifToolHelper() as et:
+        for d in et.get_tags([file], tags=["DateTimeOriginal", "OffsetTimeOriginal", "GPSLatitude", "GPSLongitude"]):
+            pass
+    return d
+
+def setPhotoTags(file, date):
+    with ExifToolHelper() as et:
+        #now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
+        et.set_tags([file],tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "00:00"})
+    return
 
 def main(target, operation, recursive):
     if path.isdir(target):
