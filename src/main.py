@@ -22,7 +22,10 @@ def lprint(s):
 
 def show_datetime(fpath):
     exif_dict = piexif.load(fpath)
+    exif_dict2 = getPhotoTags(fpath)
     lprint(f"{fpath}: {exif_dict['Exif'].get(DATETIMEORIGINAL)}")
+    print(f'Data from exiftool: {exif_dict2["EXIF:DateTimeOriginal"]}')
+    print(exif_dict2["EXIF:DateTimeOriginal"])
     return None
 
 
