@@ -8,6 +8,7 @@ import argparse
 from datetime import datetime
 from dateutil.parser import parse
 
+from exiftool import ExifToolHelper #need to add to requirements and remove piexif
 
 
 #DATETIMEORIGINAL = 36867
