@@ -91,7 +91,7 @@ def setPhotoTags(file, date):
 def main(target, operation, recursive):
     if path.isdir(target):
         if not recursive:
-            print("-r must be specified when targetting a directory")
+            print("-r must be specified when targetting a directory") #change this to work on folder
             return
         recursively_operate(target, operation)
         return
