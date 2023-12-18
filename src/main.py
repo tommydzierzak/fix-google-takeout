@@ -70,7 +70,7 @@ def update_datetime(fpath):
 def recursively_operate(target, operation):
     for root, dirs, files in os.walk(target):
         for name in files:
-            if name.lower().endswith("jpg") or name.lower().endswith("jpeg"):
+            if name.lower().endswith("jpg") or name.lower().endswith("jpeg") or name.lower().endswith("png"):
                 try:
                     operation(path.join(root, name))
                 except Exception as e:
@@ -96,8 +96,8 @@ def main(target, operation, recursive):
         recursively_operate(target, operation)
         return
     if path.isfile(target):
-        if not target.lower().endswith("jpg") and not target.lower().endswith("jpeg"):
-            print("only works for JPGs")
+        if not target.lower().endswith("jpg") and not target.lower().endswith("jpeg") and not target.lower().endswith("png"):
+            print("only works for JPGs & PNGs")
             return
         operation(target)
         return
