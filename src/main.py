@@ -19,13 +19,6 @@ def lprint(s):
     logfile[0].write(s+"\n")
 
 
-def show_datetime(fpath):
-    exif_dict = piexif.load(fpath)
-    exif_dict2 = getPhotoTags(fpath)
-    lprint(f"{fpath}: {exif_dict['Exif'].get(DATETIMEORIGINAL)}")
-    print(f'Data from exiftool: {exif_dict2["EXIF:DateTimeOriginal"]}')
-    print(exif_dict2["EXIF:DateTimeOriginal"])
-    return None
 
 
 def get_json_filename(fpath):
@@ -69,8 +62,10 @@ def update_datetime(fpath):
             print(f'File: {fpath}: Has no existing date info, and has no matching .json file in this directory... skipping')
         else:
             formattedNewDate = new_datetime.strftime("%Y:%m:%d %H:%M:%S")
-            print(f'File: {fpath}: Has no existing date info, changing to: {formattedNewDate}')
-            setPhotoTags(fpath, formattedNewDate)
+            if args.showOnly: #If -s flag is set only print files, don't make any changes
+                print(f'File: {fpath}: Has no existing date info, could change to {formattedNewDate}')
+            else: #If -s flag is not set, make changes to files
+                print(f'File: {fpath}: Has no existing date info, changing to {formattedNewDate}')
 
     #if original_datetime is not None:
     #    lprint("%s: Keeping at %s" % (fpath, original_datetime))
