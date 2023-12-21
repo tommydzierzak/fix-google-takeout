@@ -114,7 +114,7 @@ def setPhotoTags(file, date):
         et.set_tags([file],tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "00:00"}, params = exifToolParams)
     return
 
-def main(target, operation, recursive):
+def main(target):
     if os.path.isdir(target):
         #if not args.recursive:
             #print("-r must be specified when targetting a directory") #change this to work on folder
@@ -169,5 +169,5 @@ parser.add_argument(
 if __name__ == "__main__":
     args = parser.parse_args()
     logfile[0] = open("fix-google-takeout.log", "w")
-    main(args.target, args.operation, args.recursive)
+    main(args.target)
     logfile[0].close()
