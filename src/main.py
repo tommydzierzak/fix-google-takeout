@@ -9,6 +9,7 @@ from dateutil.parser import parse
 
 from exiftool import ExifToolHelper #need to add to requirements and remove piexif
 
+acceptableFiletypes = (".jpg", ".jpeg", ".png")
 
 #DATETIMEORIGINAL = 36867
 logfile = [None]
@@ -121,10 +122,10 @@ def main(target, operation, recursive):
         recursively_operate(target)
         return
     if path.isfile(target):
-        if not target.lower().endswith("jpg") and not target.lower().endswith("jpeg") and not target.lower().endswith("png"):
     if os.path.isfile(target):
         if args.recursive:
             warnings.warn("You included the recursive flag but are included the path to a file, not a directory. Ignoring recursive flag.")
+        if not target.lower().endswith(acceptableFiletypes):
             print("only works for JPGs & PNGs")
             return
         update_datetime(target)
