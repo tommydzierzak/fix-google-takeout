@@ -1,7 +1,6 @@
 import sys
 import re
 import os
-from os import path
 import json
 import piexif
 import argparse
@@ -30,16 +29,16 @@ def show_datetime(fpath):
 
 
 def get_json_filename(fpath):
-    if path.exists(fpath + ".json"):
+    if os.path.exists(fpath + ".json"):
         return fpath + ".json"
-    if path.exists(fpath + ".JSON"):
+    if os.path.exists(fpath + ".JSON"):
         return fpath + ".JSON"
-    pre, ext = path.splitext(fpath)
-    if path.exists(pre + ".json"):
+    pre, ext = os.path.splitext(fpath)
+    if os.path.exists(pre + ".json"):
         return pre + ".json"
-    if path.exists(pre + ".JSON"):
+    if os.path.exists(pre + ".JSON"):
         return pre + ".JSON"
-    if pre.endswith("-edited"):
+    if os.pre.endswith("-edited"):
         pre = re.sub("-edited$", "", pre)
         return get_json_filename(pre + ext)
     return None
@@ -112,9 +111,11 @@ def main(target, operation, recursive):
             print("-r must be specified when targetting a directory") #change this to work on folder
             return
         recursively_operate(target, operation)
+    if os.path.isdir(target):
         return
     if path.isfile(target):
         if not target.lower().endswith("jpg") and not target.lower().endswith("jpeg") and not target.lower().endswith("png"):
+    if os.path.isfile(target):
             print("only works for JPGs & PNGs")
             return
         operation(target)
