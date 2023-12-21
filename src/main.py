@@ -121,7 +121,6 @@ def main(target):
             #return
         recursively_operate(target)
         return
-    if path.isfile(target):
     if os.path.isfile(target):
         if args.recursive:
             warnings.warn("You included the recursive flag but are included the path to a file, not a directory. Ignoring recursive flag.")
