@@ -99,7 +99,7 @@ def recursively_operate(target):
 
 def getPhotoTags(file):
     with ExifToolHelper() as et:
-        for d in et.get_tags([file], tags=["DateTimeOriginal", "OffsetTimeOriginal", "GPSLatitude", "GPSLongitude"]):
+        for d in et.get_tags([file], tags=["DateTimeOriginal", "OffsetTimeOriginal"]):
             pass
     return d
 
