@@ -1,3 +1,5 @@
+#need to update readme
+
 import sys
 import re
 import os
@@ -7,7 +9,7 @@ import argparse
 from datetime import datetime
 
 from dateutil.parser import parse
-from exiftool import ExifToolHelper #need to add to requirements and remove piexif
+from exiftool import ExifToolHelper 
 
 acceptableFiletypes = (".jpg", ".jpeg", ".png")
 
