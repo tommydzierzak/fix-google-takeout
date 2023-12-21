@@ -3,24 +3,19 @@ import re
 import os
 import json
 import warnings
-import piexif
 import argparse
 from datetime import datetime
 from dateutil.parser import parse
-
 from exiftool import ExifToolHelper #need to add to requirements and remove piexif
 
 acceptableFiletypes = (".jpg", ".jpeg", ".png")
 
-#DATETIMEORIGINAL = 36867
 logfile = [None]
 
 
 def lprint(s):
     print(s)
     logfile[0].write(s+"\n")
-
-
 
 
 def get_json_filename(fpath):
@@ -52,8 +47,6 @@ def get_new_datetime(fpath):
 
 
 def update_datetime(fpath):
-    #exif_dict = piexif.load(fpath)
-    #original_datetime = exif_dict["Exif"].get(DATETIMEORIGINAL)
     existingData=getPhotoTags(fpath)
     if "EXIF:DateTimeOriginal" in existingData:
         print(f'File: {fpath}: Has existing date info, keeping at: {existingData["EXIF:DateTimeOriginal"]} {existingData["EXIF:OffsetTimeOriginal"]}') 
@@ -68,17 +61,6 @@ def update_datetime(fpath):
             else: #If -s flag is not set, make changes to files
                 print(f'File: {fpath}: Has no existing date info, changing to {formattedNewDate}')
                 setPhotoTags(fpath, formattedNewDate)
-
-    #if original_datetime is not None:
-    #    lprint("%s: Keeping at %s" % (fpath, original_datetime))
-    #    return
-    #new_datetime = get_new_datetime(fpath)
-    #if not new_datetime:
-    #    lprint("%s: No timestamp found" % fpath)
-    #    return
-    #lprint("%s: Updating %s" % (fpath, new_datetime))
-    #exif_dict["Exif"][DATETIMEORIGINAL] = new_datetime.strftime("%Y:%m:%d %H:%M:%S")
-    #piexif.insert(piexif.dump(exif_dict), fpath)
 
 
 def recursively_operate(target):
@@ -117,9 +99,6 @@ def setPhotoTags(file, date):
 
 def main(target):
     if os.path.isdir(target):
-        #if not args.recursive:
-            #print("-r must be specified when targetting a directory") #change this to work on folder
-            #return
         recursively_operate(target)
         return
     if os.path.isfile(target):
