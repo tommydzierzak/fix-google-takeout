@@ -55,8 +55,7 @@ def update_datetime(fpath):
     #original_datetime = exif_dict["Exif"].get(DATETIMEORIGINAL)
     existingData=getPhotoTags(fpath)
     if "EXIF:DateTimeOriginal" in existingData:
-        print(f'File: {fpath}: Has existing date info, keeping at: {existingData["EXIF:DateTimeOriginal"]} {existingData["EXIF:OffsetTimeOriginal"]}')
-        
+        print(f'File: {fpath}: Has existing date info, keeping at: {existingData["EXIF:DateTimeOriginal"]} {existingData["EXIF:OffsetTimeOriginal"]}') 
     else:
         new_datetime = get_new_datetime(fpath)
         if new_datetime is None:
