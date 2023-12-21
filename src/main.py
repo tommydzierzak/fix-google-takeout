@@ -66,6 +66,7 @@ def update_datetime(fpath):
                 print(f'File: {fpath}: Has no existing date info, could change to {formattedNewDate}')
             else: #If -s flag is not set, make changes to files
                 print(f'File: {fpath}: Has no existing date info, changing to {formattedNewDate}')
+                setPhotoTags(fpath, formattedNewDate)
 
     #if original_datetime is not None:
     #    lprint("%s: Keeping at %s" % (fpath, original_datetime))
