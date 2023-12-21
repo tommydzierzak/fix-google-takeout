@@ -95,9 +95,14 @@ def getPhotoTags(file):
     return d
 
 def setPhotoTags(file, date):
+    if args.originals: #If -o flag is set, keep exiftool defaults and create copies of original files
+        exifToolParams = [ ]
+    else: #If -o flag is not set, overwrite original files
+        exifToolParams = ["-P", "-overwrite_original"]
+
     with ExifToolHelper() as et:
         #now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
-        et.set_tags([file],tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "00:00"})
+        et.set_tags([file],tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "00:00"}, params = exifToolParams)
     return
 
 def main(target, operation, recursive):
@@ -140,6 +145,15 @@ parser.add_argument(
     const=True,
     default=False,
     help="fix all files in all subdirectories",
+)
+parser.add_argument(
+    "-o",
+    "--originals",
+    dest="originals",
+    action="store_const",
+    const=True,
+    default=False,
+    help="save an original copy of each editied file",
 )
 
 if __name__ == "__main__":
