@@ -79,14 +79,22 @@ def update_datetime(fpath):
     #piexif.insert(piexif.dump(exif_dict), fpath)
 
 
-def recursively_operate(target, operation):
-    for root, dirs, files in os.walk(target):
-        for name in files:
-            if name.lower().endswith("jpg") or name.lower().endswith("jpeg") or name.lower().endswith("png"):
-                try:
-                    operation(path.join(root, name))
-                except Exception as e:
-                    lprint("Could not operate %s: %s" % (name, str(e)))
+def recursively_operate(target):
+    if args.recursive: # If recursove flag is set, use os.walk to interate directory
+        for root, dirs, files in os.walk(target):
+            for name in files:
+                if name.lower().endswith(acceptableFiletypes):
+                    try:
+                        update_datetime(path.join(root, name))
+                    except Exception as e:
+                        lprint("Could not operate %s: %s" % (name, str(e)))
+    else:
+        for entry in os.scandir(target): # If recursove flag is not set, use os.scandir to interate directory
+            if entry.name.lower().endswith(acceptableFiletypes):
+                    try:
+                        update_datetime(entry.path)
+                    except Exception as e:
+                        lprint("Could not operate %s: %s" % (entry.path, str(e)))
 
 def getPhotoTags(file):
     with ExifToolHelper() as et:
@@ -106,19 +114,20 @@ def setPhotoTags(file, date):
     return
 
 def main(target, operation, recursive):
-    if path.isdir(target):
-        if not recursive:
-            print("-r must be specified when targetting a directory") #change this to work on folder
-            return
-        recursively_operate(target, operation)
     if os.path.isdir(target):
+        #if not args.recursive:
+            #print("-r must be specified when targetting a directory") #change this to work on folder
+            #return
+        recursively_operate(target)
         return
     if path.isfile(target):
         if not target.lower().endswith("jpg") and not target.lower().endswith("jpeg") and not target.lower().endswith("png"):
     if os.path.isfile(target):
+        if args.recursive:
+            warnings.warn("You included the recursive flag but are included the path to a file, not a directory. Ignoring recursive flag.")
             print("only works for JPGs & PNGs")
             return
-        operation(target)
+        update_datetime(target)
         return
     print("target is neither file nor directory")
 
