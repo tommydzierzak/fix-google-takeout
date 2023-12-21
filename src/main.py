@@ -141,11 +141,11 @@ parser.add_argument("target", help="file or directory to fix")
 parser.add_argument(
     "-s",
     "--show",
-    dest="operation",
+    dest="showOnly",
     action="store_const",
-    const=show_datetime,
-    default=update_datetime,
-    help="show (don't fix) the current DateTime",
+    const=True,
+    default=False,
+    help="show (don't fix) the current DateTime & avaliable changes",
 )
 parser.add_argument(
     "-r",
