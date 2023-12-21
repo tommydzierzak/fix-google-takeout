@@ -2,6 +2,7 @@ import sys
 import re
 import os
 import json
+import warnings
 import piexif
 import argparse
 from datetime import datetime
