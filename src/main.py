@@ -16,6 +16,8 @@ acceptableFiletypes = (".jpg", ".jpeg", ".png")
 
 logfile = [None]
 
+failedFiles = []
+
 
 def lprint(s):
     print(s)
@@ -58,6 +60,7 @@ def update_datetime(fpath):
         new_datetime = get_new_datetime(fpath)
         if new_datetime is None:
             print(f'File: {fpath}: Has no existing date info, and has no matching .json file in this directory... skipping')
+            failedFiles.append(fpath)
         else:
             formattedNewDate = new_datetime.strftime("%Y:%m:%d %H:%M:%S")
             if args.showOnly: #If -s flag is set only print files, don't make any changes
@@ -177,5 +180,7 @@ parser.add_argument(
 if __name__ == "__main__":
     args = parser.parse_args()
     logfile[0] = open("fix-google-takeout.log", "w")
-    main(args.target)
+    if failedFiles != []:
+        with open('failedFiles.txt', 'w') as outfile:
+            outfile.write('\n'.join(str(i) for i in failedFiles))
     logfile[0].close()
