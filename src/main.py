@@ -6,6 +6,7 @@ import os
 import json
 import warnings
 import argparse
+import imghdr
 from datetime import datetime
 
 from dateutil.parser import parse
@@ -95,9 +96,34 @@ def setPhotoTags(file, date):
     else: #If -o flag is not set, overwrite original files
         exifToolParams = ["-P", "-overwrite_original"]
 
-    with ExifToolHelper() as et:
-        #now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
-        et.set_tags([file],tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "00:00"}, params = exifToolParams)
+    try:
+        with ExifToolHelper() as et:
+            # now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
+            et.set_tags([args], tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "+00:00"}, params=exifToolParams)
+    except Exception as e:  # if changing data fails, check that file type matches extension and retry
+        fileExtension = imghdr.what(file)
+        name, ext = os.path.splitext(file)
+
+        if ext == ".jpg":
+            extHold = "jpeg"
+        else:
+            extHold = ext.split(".")[1]
+
+        if fileExtension.lower() != extHold.lower():
+            newFilename = name + ext.replace(".", "_") + "." + fileExtension
+            print(f'the preceding file seems to be a {fileExtension} but is saved as a {extHold}, renaming to:  {newFilename}')
+            try:
+                os.rename(file, newFilename)
+                with ExifToolHelper() as et:
+                    # now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
+                    et.set_tags([newFilename], tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "+00:00"}, params=exifToolParams)
+            except Exception as e:
+                lprint("Could not operate %s: %s" % (entry.path, str(e)))
+                failedFiles.append(file)
+        else:
+            lprint("Could not operate %s" % (file))
+            failedFiles.append(file)
+
     return
 
 def main(target):
