@@ -151,3 +151,5 @@ cython_debug/
 .DS_Store
 
 test_*
+
+failedFiles.txt
