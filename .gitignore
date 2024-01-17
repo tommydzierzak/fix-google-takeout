@@ -152,4 +152,4 @@ cython_debug/
 
 test_*
 
-failedFiles.txt
+failedFiles*
