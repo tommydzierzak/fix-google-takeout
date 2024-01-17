@@ -7,7 +7,7 @@ import os
 import json
 import warnings
 import argparse
-import imghdr
+import imghdr  # "Deprecated since version 3.11, will be removed in version 3.13"
 from datetime import datetime
 
 from dateutil.parser import parse
