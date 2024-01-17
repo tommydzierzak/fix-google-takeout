@@ -1,4 +1,5 @@
-#need to update readme
+# need to update readme
+# folders with an emoji will not work correctly
 
 import sys
 import re
@@ -10,7 +11,7 @@ import imghdr
 from datetime import datetime
 
 from dateutil.parser import parse
-from exiftool import ExifToolHelper 
+from exiftool import ExifToolHelper
 
 acceptableFiletypes = (".jpg", ".jpeg", ".png")
 
@@ -21,7 +22,7 @@ failedFiles = []
 
 def lprint(s):
     print(s)
-    logfile[0].write(s+"\n")
+    logfile[0].write(s + "\n")
 
 
 def get_json_filename(fpath):
@@ -55,6 +56,13 @@ def get_new_datetime(fpath):
             return None
 
 
+def update_datetime(args, fpath):
+    existingData = getPhotoTags(fpath)
+    if "EXIF:DateTimeOriginal" in existingData:  # Probably a simpler way to handle this chunk of if statements
+        if "EXIF:OffsetTimeOriginal" in existingData:  # Check if offset dat exists before printing it
+            print(f"File: {fpath}: Has existing date info, keeping at: {existingData['EXIF:DateTimeOriginal']} {existingData['EXIF:OffsetTimeOriginal']}")
+        else:  # if not only print the date info
+            print(f"File: {fpath}: Has existing date info, keeping at: {existingData['EXIF:DateTimeOriginal']}")
     elif "XMP:DateCreated" in existingData:
         print(f"File: {fpath}: Has existing date info, keeping at: {existingData['XMP:DateCreated']}")
     else:
@@ -64,29 +72,30 @@ def get_new_datetime(fpath):
             failedFiles.append(fpath)
         else:
             formattedNewDate = new_datetime.strftime("%Y:%m:%d %H:%M:%S")
-            if args.showOnly: #If -s flag is set only print files, don't make any changes
+            if args.showOnly:  # If -s flag is set only print files, don't make any changes
                 print(f'File: {fpath}: Has no existing date info, could change to {formattedNewDate}')
-            else: #If -s flag is not set, make changes to files
+            else:  # If -s flag is not set, make changes to files
                 print(f'File: {fpath}: Has no existing date info, changing to {formattedNewDate}')
-                setPhotoTags(fpath, formattedNewDate)
+                setPhotoTags(args, formattedNewDate)
 
 
-def recursively_operate(target):
-    if args.recursive: # If recursove flag is set, use os.walk to interate directory
-        for root, dirs, files in os.walk(target):
+def recursively_operate(args):
+    if args.recursive:  # If recursive flag is set, use os.walk to iterate directory
+        for root, dirs, files in os.walk(args.target):
             for name in files:
                 if name.lower().endswith(acceptableFiletypes):
                     try:
-                        update_datetime(path.join(root, name))
+                        update_datetime(args, os.path.join(root, name))
                     except Exception as e:
                         lprint("Could not operate %s: %s" % (name, str(e)))
     else:
-        for entry in os.scandir(target): # If recursove flag is not set, use os.scandir to interate directory
+        for entry in os.scandir(args.target):  # If recursive flag is not set, use os.scandir to iterate directory
             if entry.name.lower().endswith(acceptableFiletypes):
-                    try:
-                        update_datetime(entry.path)
-                    except Exception as e:
-                        lprint("Could not operate %s: %s" % (entry.path, str(e)))
+                try:
+                    update_datetime(args, entry.path)
+                except Exception as e:
+                    lprint("Could not operate %s: %s" % (entry.path, str(e)))
+
 
 def getPhotoTags(file):
     with ExifToolHelper() as et:
@@ -94,10 +103,11 @@ def getPhotoTags(file):
             pass
     return d
 
-def setPhotoTags(file, date):
-    if args.originals: #If -o flag is set, keep exiftool defaults and create copies of original files
-        exifToolParams = [ ]
-    else: #If -o flag is not set, overwrite original files
+
+def setPhotoTags(args, date):
+    if args.originals:  # If -o flag is set, keep exiftool defaults and create copies of original files
+        exifToolParams = []
+    else:  # If -o flag is not set, overwrite original files
         exifToolParams = ["-P", "-overwrite_original"]
 
     try:
@@ -130,58 +140,48 @@ def setPhotoTags(file, date):
 
     return
 
-def main(target):
-    if os.path.isdir(target):
-        recursively_operate(target)
+
+def process(args):
+    print(f"\nFlag1: {args.showOnly}\nFlag2: {args.originals}\nDirectory: {args.target}\n")
+
+    print(os.path.isfile(args.target))
+    print(os.path.isdir(args.target))
+
+    if os.path.isdir(args.target):
+        recursively_operate(args)
         return
-    if os.path.isfile(target):
+    if os.path.isfile(args.target):
         if args.recursive:
             warnings.warn("You included the recursive flag but are included the path to a file, not a directory. Ignoring recursive flag.")
         if not target.lower().endswith(acceptableFiletypes):
-            print("only works for JPGs & PNGs")
+            warnings.warn("only works for JPGs & PNGs")
             return
-        update_datetime(target)
+        else:
+            update_datetime(args, args.target)
         return
     print("target is neither file nor directory")
 
 
-parser = argparse.ArgumentParser(
-    prog="fix-google-takeout",
-    description="Fix DateTimeOriginal EXIF tag for Google Takeout images based on data in colocated json files",
-)
-parser.add_argument("target", help="file or directory to fix")
-parser.add_argument(
-    "-s",
-    "--show",
-    dest="showOnly",
-    action="store_const",
-    const=True,
-    default=False,
-    help="show (don't fix) the current DateTime & avaliable changes",
-)
-parser.add_argument(
-    "-r",
-    "--recursive",
-    dest="recursive",
-    action="store_const",
-    const=True,
-    default=False,
-    help="fix all files in all subdirectories",
-)
-parser.add_argument(
-    "-o",
-    "--originals",
-    dest="originals",
-    action="store_const",
-    const=True,
-    default=False,
-    help="save an original copy of each editied file",
-)
+def main():
+    parser = argparse.ArgumentParser(prog="fix-google-takeout", description="Fix DateTimeOriginal EXIF tag for Google Takeout images based on data in colocated json files")
+    parser.add_argument("target", help="file or directory to fix")
+    parser.add_argument("-s", "--show", dest="showOnly", action="store_const", const=True, default=False, help="show (don't fix) the current DateTime & available changes")
+    parser.add_argument("-r", "--recursive", dest="recursive", action="store_const", const=True, default=False, help="fix all files in all subdirectories")
+    parser.add_argument("-o", "--originals", dest="originals", action="store_const", const=True, default=False, help="save an original copy of each edited file")
 
-if __name__ == "__main__":
     args = parser.parse_args()
+
+    print(args)
     logfile[0] = open("fix-google-takeout.log", "w")
+
+    process(args)
+
     if failedFiles != []:
         with open('failedFiles.txt', 'w') as outfile:
             outfile.write('\n'.join(str(i) for i in failedFiles))
+
     logfile[0].close()
+
+
+if __name__ == "__main__":
+    main()
