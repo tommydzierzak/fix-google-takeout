@@ -34,9 +34,12 @@ def get_json_filename(fpath):
         return pre + ".json"
     if os.path.exists(pre + ".JSON"):
         return pre + ".JSON"
-    if os.pre.endswith("-edited"):
+    if pre.endswith("-edited"):
         pre = re.sub("-edited$", "", pre)
         return get_json_filename(pre + ext)
+    regReturn = re.search(r'\((\d+)\)$', pre)
+    if regReturn is not None:
+        return get_json_filename(pre.removesuffix(regReturn[0]) + ext + regReturn[0])
     return None
 
 
