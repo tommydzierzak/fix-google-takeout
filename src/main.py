@@ -55,10 +55,8 @@ def get_new_datetime(fpath):
             return None
 
 
-def update_datetime(fpath):
-    existingData=getPhotoTags(fpath)
-    if "EXIF:DateTimeOriginal" in existingData:
-        print(f'File: {fpath}: Has existing date info, keeping at: {existingData["EXIF:DateTimeOriginal"]} {existingData["EXIF:OffsetTimeOriginal"]}') 
+    elif "XMP:DateCreated" in existingData:
+        print(f"File: {fpath}: Has existing date info, keeping at: {existingData['XMP:DateCreated']}")
     else:
         new_datetime = get_new_datetime(fpath)
         if new_datetime is None:
@@ -92,7 +90,7 @@ def recursively_operate(target):
 
 def getPhotoTags(file):
     with ExifToolHelper() as et:
-        for d in et.get_tags([file], tags=["DateTimeOriginal", "OffsetTimeOriginal"]):
+        for d in et.get_tags([file], tags=["DateTimeOriginal", "OffsetTimeOriginal", "XMP:DateCreated"]):
             pass
     return d
 
