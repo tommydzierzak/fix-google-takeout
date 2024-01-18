@@ -160,10 +160,6 @@ def versionCheck():
 
 
 def process(args):
-    print(f"\nFlag1: {args.showOnly}\nFlag2: {args.originals}\nDirectory: {args.target}\n")
-
-    print(os.path.isfile(args.target))
-    print(os.path.isdir(args.target))
     if args.check:
         versionCheck()
     elif args.target == []:
@@ -194,7 +190,6 @@ def main():
 
     args = parser.parse_args()
 
-    print(args)
     logfile[0] = open("fix-google-takeout.log", "w")
 
     process(args)
