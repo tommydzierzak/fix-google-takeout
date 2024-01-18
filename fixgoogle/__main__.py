@@ -153,7 +153,7 @@ def process(args):
     if os.path.isfile(args.target):
         if args.recursive:
             warnings.warn("You included the recursive flag but are included the path to a file, not a directory. Ignoring recursive flag.")
-        if not target.lower().endswith(acceptableFiletypes):
+        if not args.target.lower().endswith(acceptableFiletypes):
             warnings.warn("only works for JPGs & PNGs")
             return
         else:
