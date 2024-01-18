@@ -9,9 +9,13 @@ import warnings
 import argparse
 import imghdr  # "Deprecated since version 3.11, will be removed in version 3.13"
 from datetime import datetime
+import subprocess
 
+from packaging import version
 from dateutil.parser import parse
 from exiftool import ExifToolHelper
+
+minExiftoolVersion = "12.15"
 
 acceptableFiletypes = (".jpg", ".jpeg", ".png")
 
@@ -141,33 +145,52 @@ def setPhotoTags(args, date):
     return
 
 
+def versionCheck():
+    try:
+        result = subprocess.run(['exiftool', '-ver'], stdout=subprocess.PIPE)
+    except:
+        print("ExifTool does not seem to be installed correctly, please follow the ExifTool install instructions again")
+    else:
+        if result.returncode == 0:
+            exiftoolVersion = '.'.join(re.findall('\d+', str(result.stdout)))
+            if version.parse(exiftoolVersion) >= version.parse(minExiftoolVersion):
+                print("ExifTool version looks good")
+            else:
+                print(f"This tool requires ExifTool version {minExiftoolVersion} or higher, it seems you have version {exiftoolVersion}")
+
+
 def process(args):
     print(f"\nFlag1: {args.showOnly}\nFlag2: {args.originals}\nDirectory: {args.target}\n")
 
     print(os.path.isfile(args.target))
     print(os.path.isdir(args.target))
-
-    if os.path.isdir(args.target):
-        recursively_operate(args)
-        return
-    if os.path.isfile(args.target):
-        if args.recursive:
-            warnings.warn("You included the recursive flag but are included the path to a file, not a directory. Ignoring recursive flag.")
-        if not args.target.lower().endswith(acceptableFiletypes):
-            warnings.warn("only works for JPGs & PNGs")
+    if args.check:
+        versionCheck()
+    elif args.target == []:
+        print("No file or directory target provided")
+    else:
+        if os.path.isdir(args.target):
+            recursively_operate(args)
             return
-        else:
-            update_datetime(args, args.target)
-        return
-    print("target is neither file nor directory")
+        if os.path.isfile(args.target):
+            if args.recursive:
+                warnings.warn("You included the recursive flag but are included the path to a file, not a directory. Ignoring recursive flag.")
+            if not args.target.lower().endswith(acceptableFiletypes):
+                warnings.warn("only works for JPGs & PNGs")
+                return
+            else:
+                update_datetime(args, args.target)
+            return
+        print("target is neither file nor directory")
 
 
 def main():
     parser = argparse.ArgumentParser(prog="fix-google-takeout", description="Fix DateTimeOriginal EXIF tag for Google Takeout images based on data in colocated json files")
-    parser.add_argument("target", help="file or directory to fix")
+    parser.add_argument("target", nargs='?', type=str, default=[], help="file or directory to fix")
     parser.add_argument("-s", "--show", dest="showOnly", action="store_const", const=True, default=False, help="show (don't fix) the current DateTime & available changes")
     parser.add_argument("-r", "--recursive", dest="recursive", action="store_const", const=True, default=False, help="fix all files in all subdirectories")
     parser.add_argument("-o", "--originals", dest="originals", action="store_const", const=True, default=False, help="save an original copy of each edited file")
+    parser.add_argument("-c", "--check", dest="check", action="store_const", const=True, default=False, help="check Exiftool version is correct")
 
     args = parser.parse_args()
 
