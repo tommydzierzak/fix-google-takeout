@@ -1,5 +1,19 @@
 # fix-google-takeout
-- [fix-google-takeout](#fix-google-takeout)
+- [fix-google-takeout](#fix-google-takeout)- [fix-google-takeout](#fix-google-takeout)
+  - [Warning](#warning)
+  - [Overview](#overview)
+  - [Fork Note](#fork-note)
+  - [Current Limitations/ Future Improvements](#current-limitations-future-improvements)
+  - [Installation](#installation)
+    - [Step 1: Install ExifTool](#step-1-install-exiftool)
+      - [Easy method:](#easy-method)
+      - [Slightly less easy method:](#slightly-less-easy-method)
+    - [Step 2: Clone this repo](#step-2-clone-this-repo)
+    - [Step 3: Create and activate virtual environment](#step-3-create-and-activate-virtual-environment)
+    - [Step 4: Install requirements](#step-4-install-requirements)
+    - [Step 5: Check install](#step-5-check-install)
+  - [Execution !! Needs updated !!](#execution--needs-updated-)
+
   - [Warning](#warning)
   - [Overview](#overview)
   - [Fork Note](#fork-note)
@@ -55,34 +69,34 @@ cd fix-google-takeout
 
 |Mac:|Windows:|
 |:---:|:---:|
-|```python -m venv venv``` <br> ```venv\Scripts\activate.bat```|```python -m venv venv``` <br> ```venv\Scripts\activate.bat```|
+|```python -m venv venv``` <br> ```. venv/bin/activate```|```python -m venv venv``` <br> ```. venv\Scripts\activate.bat```|
 
 ### Step 4: Install requirements
 
 ```
-pip install -r requirements.txt
+pip install .
 ```
 
 ### Step 5: Check install
 
 ```
-!! Add step to check if install is correct !!
+fixgt -c
 ```
 
 
 ## Execution !! Needs updated !!
 ```
-./fix-google-takeout -h
-
-usage: fix-google-takeout [-h] [--show] [-r] target
+usage: fixgt [-h] [-s] [-r] [-o] [-c] [target]
 
 Fix DateTimeOriginal EXIF tag for Google Takeout images based on data in colocated json files
 
 positional arguments:
   target           file or directory to fix
 
-optional arguments:
+options:
   -h, --help       show this help message and exit
-  --show           show (don't fix) the current DateTime
+  -s, --show       show (don't fix) the current DateTime & available changes
   -r, --recursive  fix all files in all subdirectories
+  -o, --originals  save an original copy of each edited file
+  -c, --check      check Exiftool version is correct
 ```
