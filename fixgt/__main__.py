@@ -80,7 +80,7 @@ def update_datetime(args, fpath):
                 print(f'File: {fpath}: Has no existing date info, could change to {formattedNewDate}')
             else:  # If -s flag is not set, make changes to files
                 print(f'File: {fpath}: Has no existing date info, changing to {formattedNewDate}')
-                setPhotoTags(args, formattedNewDate)
+                setPhotoTags(args, fpath, formattedNewDate)
 
 
 def recursively_operate(args):
@@ -108,7 +108,7 @@ def getPhotoTags(file):
     return d
 
 
-def setPhotoTags(args, date):
+def setPhotoTags(args, fpath, date):
     if args.originals:  # If -o flag is set, keep exiftool defaults and create copies of original files
         exifToolParams = []
     else:  # If -o flag is not set, overwrite original files
@@ -117,10 +117,10 @@ def setPhotoTags(args, date):
     try:
         with ExifToolHelper() as et:
             # now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
-            et.set_tags([args.target], tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "+00:00"}, params=exifToolParams)
+            et.set_tags([fpath], tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "+00:00"}, params=exifToolParams) # Future improvement: could check exiftool return output if the file was changed correctly
     except Exception as e:  # if changing data fails, check that file type matches extension and retry
-        fileExtension = imghdr.what(args.target)
-        name, ext = os.path.splitext(args.target)
+        fileExtension = imghdr.what(fpath)
+        name, ext = os.path.splitext(fpath)
 
         if ext == ".jpg":
             extHold = "jpeg"
@@ -131,7 +131,7 @@ def setPhotoTags(args, date):
             newFilename = name + ext.replace(".", "_") + "." + fileExtension
             print(f'the preceding file seems to be a {fileExtension} but is saved as a {extHold}, renaming to:  {newFilename}')
             try:
-                os.rename(args.target, newFilename)
+                os.rename(fpath, newFilename)
                 with ExifToolHelper() as et:
                     # now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
                     et.set_tags([newFilename], tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "+00:00"}, params=exifToolParams)
