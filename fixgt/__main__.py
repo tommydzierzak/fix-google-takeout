@@ -117,10 +117,10 @@ def setPhotoTags(args, date):
     try:
         with ExifToolHelper() as et:
             # now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
-            et.set_tags([args], tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "+00:00"}, params=exifToolParams)
+            et.set_tags([args.target], tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "+00:00"}, params=exifToolParams)
     except Exception as e:  # if changing data fails, check that file type matches extension and retry
-        fileExtension = imghdr.what(file)
-        name, ext = os.path.splitext(file)
+        fileExtension = imghdr.what(args.target)
+        name, ext = os.path.splitext(args.target)
 
         if ext == ".jpg":
             extHold = "jpeg"
@@ -131,7 +131,7 @@ def setPhotoTags(args, date):
             newFilename = name + ext.replace(".", "_") + "." + fileExtension
             print(f'the preceding file seems to be a {fileExtension} but is saved as a {extHold}, renaming to:  {newFilename}')
             try:
-                os.rename(file, newFilename)
+                os.rename(args.target, newFilename)
                 with ExifToolHelper() as et:
                     # now = datetime.strftime(datetime.now(), "%Y:%m:%d %H:%M:%S")
                     et.set_tags([newFilename], tags={"DateTimeOriginal": date, "OffsetTimeOriginal": "+00:00"}, params=exifToolParams)
