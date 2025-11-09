@@ -37,7 +37,7 @@ Google takeout (https://takeout.google.com/settings/takeout) for photos mangles 
 ## Fork Note
 I forked this repo from [xmonkee/fix-google-takeout](https://github.com/xmonkee/fix-google-takeout), and used it for a majority of my exported Google Photos. However, the python library used in the script ([piexif](https://pypi.org/project/piexif)) does not support PNGs which I had many of in my library. So I rewrote the tool using Phil Harvey's excellent [ExifTool](https://exiftool.org/). Additionally, I added a few other enhancements:
 * When changing the EXIF data the tool can optionally add a copy of the pre-changed photo
-* The tool can no operate on a single directory, rather than having to recursively operate on all lower directories
+* The tool can operate either on a single directory or recursively on all lower directories
 * (in progress: add tool to check if python script can access exiftool)
 
 ## Current Limitations/ Future Improvements
@@ -100,3 +100,4 @@ options:
   -o, --originals  save an original copy of each edited file
   -c, --check      check Exiftool version is correct
 ```
+
